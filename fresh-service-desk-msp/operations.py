@@ -1,8 +1,9 @@
-""" Copyright start
-  Copyright (C) 2024 Fortinet Inc.
-  All rights reserved.
-  FORTINET CONFIDENTIAL & FORTINET PROPRIETARY SOURCE CODE
-  Copyright end """
+"""
+Copyright start
+MIT License
+Copyright (c) 2023 Fortinet Inc
+Copyright end
+"""
 
 import requests
 import json
@@ -92,7 +93,7 @@ def make_api_call(config, method='GET', endpoint=None, files=None, data=None):
     try:
         response = requests.request(url=url, method=method, auth=(username, password), headers=headers, files=files,
                                     data=data, verify=verify_ssl)
-        if response.status_code in [200, 201,204]:
+        if response.status_code in [200, 201, 204]:
             return response
         elif response.status_code == 401:
             logger.info('Unauthorized: Invalid credentials')
@@ -144,7 +145,7 @@ def create_ticket(config, params, **kwargs):
         if cc_emails:
             payload['cc_emails'] = cc_emails.split(',')
         return payload
-        #return make_api_call(config, method='POST', endpoint='/api/v2/tickets', data=json.dumps(payload)).json()
+        return make_api_call(config, method='POST', endpoint='/api/v2/tickets', data=json.dumps(payload)).json()
     except Exception as e:
         logger.exception('{}'.format(e))
         raise ConnectorError('{}'.format(e))
