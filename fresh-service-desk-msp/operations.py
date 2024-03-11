@@ -11,7 +11,7 @@ import requests
 from connectors.core.connector import get_logger, ConnectorError
 from connectors.cyops_utilities.builtins import download_file_from_cyops
 from integrations.crudhub import make_request
-from .constants import STATUS_MAP, PRIORITY_MAP
+from .constants import STATUS_MAP, PRIORITY_MAP, ERROR_MSGS
 
 logger = get_logger('fresh-service-desk-msp')
 
@@ -38,7 +38,7 @@ def check_health(config):
             return response.json()
         else:
             raise ConnectorError('Error [{0}] occurred while fetching ticket with status [{1}] code : '.
-                                 format(response.reason, response.status_code))
+                                 format(response.text, response.status_code))
     except Exception as err:
         raise ConnectorError(err)
 
@@ -90,26 +90,22 @@ def make_api_call(config, method='GET', endpoint=None, files=None, data=None):
         logger.debug('API Status Code: {}'.format(response.status_code))
         if response.status_code in [200, 201, 204]:
             return response
-        elif response.status_code == 401:
-            logger.error(response.text)
-            raise ConnectorError('Unauthorized: Invalid credentials')
+        if ERROR_MSGS.get(response.status_code):
+            logger.error('Failed to request API {0} response is : {1} with reason: {2}'.format(str(server_url), str(response.content),
+                                                                                  str(response.reason)))
+            raise ConnectorError('{0}: {1}'.format(ERROR_MSGS.get(response.status_code), response.text))
+
         else:
-            logger.info(
-                'Failed to request API {0} response is : {1} with reason: {2}'.format(str(server_url),
-                                                                                      str(response.content),
-                                                                                      str(response.reason)))
-            raise ConnectorError(
-                'Failed to request API {0} response is :{1} with reason: {2}'.format(str(server_url),
-                                                                                     str(response.content),
-                                                                                     str(response.reason)))
+            logger.error('error: {}'.format(response.reason))
+            raise ConnectorError('API Response: {0} with error {1}: '.format(response.text, response.reason))
     except requests.exceptions.SSLError as e:
-        logger.exception('{}'.format(e))
+        logger.error('{}'.format(e))
         raise ConnectorError('{}'.format('SSL certificate validation failed'))
     except requests.exceptions.ConnectionError as e:
-        logger.exception('{}'.format(e))
+        logger.error('{}'.format(e))
         raise ConnectorError('{}'.format('The request timed out while trying to connect to the remote server'))
     except Exception as e:
-        logger.exception('{}'.format(e))
+        logger.error('{}'.format(e))
         raise ConnectorError('{}'.format(e))
 
 
