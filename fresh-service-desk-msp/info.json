@@ -79,17 +79,6 @@
           "tooltip": "Specify the subject of the ticket request that you want to create in Fresh Service Desk MSP."
         },
         {
-          "title": "Description",
-          "type": "textarea",
-          "name": "description",
-          "required": false,
-          "visible": true,
-          "editable": true,
-          "value": "",
-          "description": "(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP.",
-          "tooltip": "(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP."
-        },
-        {
           "title": "Email",
           "type": "email",
           "name": "email",
@@ -143,6 +132,17 @@
             "High",
             "Urgent"
           ]
+        },
+        {
+          "title": "Description",
+          "type": "textarea",
+          "name": "description",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "description": "(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP.",
+          "tooltip": "(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP."
         }
       ],
       "open": false,
