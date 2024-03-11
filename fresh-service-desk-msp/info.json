@@ -1,559 +1,556 @@
 {
-    "name": "fresh-service-desk-msp",
-    "version": "1.0.0",
-    "label": "Fresh Service Desk MSP",
-    "description": "Fresh Service Desk MSP is a cloud-based service desk and IT service management (ITSM) platform designed to streamline service management for businesses. It offers a range of features including incident management, problem management, change management, asset management, and more. Freshservice provides a user-friendly interface for managing service requests, automating workflows, tracking assets, and generating reports. Its multi-tenant architecture ensures data segregation and security for different clients. The connector for Freshservice enables automated actions such as creating, updating, deleting, and closing tickets, enhancing the efficiency of service delivery for managed service providers.",
-    "publisher": "spryIQ.co",
-    "icon_small_name": "Fresh_Service_Small.png",
-    "icon_large_name": "Fresh_Service_Large.png",
-    "cs_compatible": true,
-    "cs_approved": false,
-    "category": "Ticket Management",
-    "help_online": "https://github.com/fortinet-fortisoar/connector-fresh-service-desk-msp/blob/release/1.0.0/docs/FreshServiceDeskMspConnectorDoc.md",
-    "configuration": {
-        "fields": [
-            {
-                "title": "Server URL",
-                "type": "text",
-                "name": "server",
-                "required": true,
-                "visible": true,
-                "editable": true,
-                "placeholder":"https://helpdesk.freshservice.com or helpdesk.freshservice.com",
-                "value": "",
-                "description":"Specify the URL of the Fresh Service Desk MSP server to which you will connect and perform the automated operations.", 
-                "tooltip": "Specify the URL of the Fresh Service Desk MSP server to which you will connect and perform the automated operations."
-
-            },
-            {
-                "title": "Username",
-                "type": "text",
-                "name": "username",
-                "required": true,
-                "visible": true,
-                "editable": true,
-                "placeholder":"gvVU1asssHdq1TPjQtJ1I",
-                "value": "",
-                "description":"Specify the API key that is configured for your account to access the Fresh Service Desk MSP endpoint.",
-                "tooltip": "Specify the API key that is configured for your account to access the Fresh Service Desk MSP endpoint."
-            },
-            {
-                "title": "Password",
-                "type": "password",
-                "name": "password",
-                "required": true,
-                "visible": true,
-                "editable": true,
-                "value": "",
-                "description":"Specify the password that is configured for your account to access the Fresh Service Desk MSP endpoint.",
-                "tooltip": "Specify the password that is configured for your account to access the Fresh Service Desk MSP endpoint."
-            },
-            {
-                "title": "Verify SSL",
-                "type": "checkbox",
-                "name": "verify_ssl",
-                "required": false,
-                "visible": true,
-                "editable": true,
-                "description": "Specifies whether the SSL certificate for the server is to be verified or not.By default, this option is set as True.",
-                "value": true
-            }
-        ]
-    },
-    "operations": [
-        {
-            "title": "Create Ticket",
-            "operation": "create_ticket",
-            "description": "Creates a ticket in Fresh Service Desk MSP based on the requester, subject, and other input parameters you have specified.",
-            "annotation": "create_ticket",
-            "category": "investigation",
-            "parameters": [
-                {
-                    "title": "Subject",
-                    "type": "text",
-                    "name": "subject",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "description":"Specify the subject of the ticket request that you want to create in Fresh Service Desk MSP.",
-                    "tooltip": "Specify the subject of the ticket request that you want to create in Fresh Service Desk MSP."
-                },
-                {
-                    "title": "Description",
-                    "type": "textarea",
-                    "name": "description",
-                    "required": false,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "description":"(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP.",
-                    "tooltip": "(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP."
-                },
-                {
-                    "title": "Email",
-                    "type": "email",
-                    "name": "email",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "description":"Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.",
-                    "tooltip": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact."
-                },
-                {
-                    "title": "CC Email",
-                    "type": "text",
-                    "name": "cc_emails",
-                    "required": false,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "placeholder": "Email addresses comma separated",
-                    "description":"Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.",
-                    "tooltip": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact."
-                },
-                {
-                    "title": "Status",
-                    "type": "select",
-                    "name": "status",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "Open",
-                    "tooltip": "Select the status of the ticket request to create in Fresh Service Desk MSP.",
-                    "options": [
-                        "Open",
-                        "Pending",
-                        "Resolved",
-                        "Closed"
-                    ]
-                },
-                {
-                    "title": "Priorities",
-                    "type": "select",
-                    "name": "priorities",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "Low",
-                    "tooltip": "Select the priority of the ticket request to create in Fresh Service Desk MSP.",
-                    "options": [
-                        "Low",
-                        "Medium",
-                        "High",
-                        "Urgent"
-                    ]
-                }
-            ],
-            "open": false,
-            "output_schema": [
-                {
-                "ticket": {
-                    "cc_emails": [],
-                    "fwd_emails": [],
-                    "reply_cc_emails": [
-                    ],
-                    "fr_escalated": "",
-                    "spam": "",
-                    "email_config_id": "",
-                    "group_id": "",
-                    "priority": "",
-                    "requester_id": "",
-                    "requested_for_id": "",
-                    "responder_id": "",
-                    "source": "",
-                    "status": "",
-                    "subject": "",
-                    "to_emails": "",
-                    "department_id": "",
-                    "id": "",
-                    "type": "",
-                    "due_by": "",
-                    "fr_due_by": "",
-                    "is_escalated": "",
-                    "description": "",
-                    "description_text": "",
-                    "category": "",
-                    "sub_category": "",
-                    "item_category": "",
-                    "custom_fields": {
-                      "auto_checkbox": ""
-                    },
-                    "created_at": "",
-                    "updated_at": "",
-                    "tags": [],
-                    "attachments": [],
-                    "workspace_id": "",
-                    "resolution_notes": "",
-                    "resolution_notes_html": ""
-                  }
-                }
-            ]
-        },
-        {
-            "title": "Get Ticket By ID",
-            "operation": "get_ticket_by_id",
-            "description": "Retrieves details of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
-            "annotation": "get_ticket_by_id",
-            "category": "investigation",
-            "parameters": [
-                {
-                    "title": "Ticket ID",
-                    "type": "text",
-                    "name": "ticket_id",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "placeholder": "Numerical e.g: 20",
-                    "description":"Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP.",
-                    "tooltip": "Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP."
-                    
-                }
-            ],
-            "output_schema": [
-                {
-                "ticket": {
-                    "cc_emails": [],
-                    "fwd_emails": [],
-                    "reply_cc_emails": [
-                    ],
-                    "fr_escalated": "",
-                    "spam": "",
-                    "email_config_id": "",
-                    "group_id": "",
-                    "priority": "",
-                    "requester_id": "",
-                    "requested_for_id": "",
-                    "responder_id": "",
-                    "source": "",
-                    "status": "",
-                    "subject": "",
-                    "to_emails": "",
-                    "department_id": "",
-                    "id": "",
-                    "type": "",
-                    "due_by": "",
-                    "fr_due_by": "",
-                    "is_escalated": "",
-                    "description": "",
-                    "description_text": "",
-                    "category": "",
-                    "sub_category": "",
-                    "item_category": "",
-                    "custom_fields": {
-                      "auto_checkbox": ""
-                    },
-                    "created_at": "",
-                    "updated_at": "",
-                    "tags": [],
-                    "attachments": [],
-                    "workspace_id": "",
-                    "resolution_notes": "",
-                    "resolution_notes_html": ""
-                  }
-                }
-            ],
-            "open": false
-        },
-        {
-            "title": "Delete Ticket By ID",
-            "operation": "delete_ticket_by_id",
-            "description": "Delete of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
-            "annotation": "delete_ticket_by_id",
-            "category": "investigation",
-            "parameters": [
-                {
-                    "title": "Ticket ID",
-                    "type": "text",
-                    "name": "ticket_id",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "placeholder": "Numerical e.g: 20",
-                    "description":"Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP.",
-                    "tooltip": "Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP."
-                }
-            ],
-            "output_schema": [
-                {
-                "ticket": {
-                    "cc_emails": [],
-                    "fwd_emails": [],
-                    "reply_cc_emails": [
-                    ],
-                    "fr_escalated": "",
-                    "spam": "",
-                    "email_config_id": "",
-                    "group_id": "",
-                    "priority": "",
-                    "requester_id": "",
-                    "requested_for_id": "",
-                    "responder_id": "",
-                    "source": "",
-                    "status": "",
-                    "subject": "",
-                    "to_emails": "",
-                    "department_id": "",
-                    "id": "",
-                    "type": "",
-                    "due_by": "",
-                    "fr_due_by": "",
-                    "is_escalated": "",
-                    "description": "",
-                    "description_text": "",
-                    "category": "",
-                    "sub_category": "",
-                    "item_category": "",
-                    "custom_fields": {
-                      "auto_checkbox": ""
-                    },
-                    "created_at": "",
-                    "updated_at": "",
-                    "tags": [],
-                    "attachments": [],
-                    "workspace_id": "",
-                    "resolution_notes": "",
-                    "resolution_notes_html": ""
-                  }
-                }
-            ],
-            "open": false
-        },
-        {
-            "title": "Update Ticket",
-            "operation": "update_ticket",
-            "description": "Update a ticket in Fresh Service Desk MSP based on the ticket id and other input parameters you have specified.",
-            "annotation": "update_ticket",
-            "category": "investigation",
-            "parameters": [
-                {
-                    "title": "Ticket ID",
-                    "type": "text",
-                    "name": "ticket_id",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "placeholder": "e.g. 22",
-                    "tooltip": "Specify id of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP."
-                },
-                {
-                    "title": "Subject",
-                    "type": "text",
-                    "name": "subject",
-                    "required": false,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "description":"Specify the subject of the ticket request that you want to update in Fresh Service Desk MSP.",
-                    "tooltip": "Specify the subject of the ticket request that you want to update in Fresh Service Desk MSP."
-                },
-                {
-                    "title": "Description",
-                    "type": "textarea",
-                    "name": "description",
-                    "required": false,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "description":"Specify the description of the ticket request that you want to update in Fresh Service Desk MSP.",
-                    "tooltip": "Specify the description of the ticket request that you want to update in Fresh Service Desk MSP."
-
-                },
-                {
-                    "title": "Email",
-                    "type": "email",
-                    "name": "email",
-                    "required": false,
-                    "visible": true,
-                    "editable": true,
-                    "value": "",
-                    "description":"Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.",
-                    "tooltip": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact."
-                },
-                {
-                    "title": "Status",
-                    "type": "select",
-                    "name": "status",
-                    "required": false,
-                    "visible": true,
-                    "editable": true,
-                    "value": "Open",
-                    "tooltip": "Select the status of the ticket request for which you want to create tickets from Fresh Service Desk MSP.",
-                    "options": [
-                        "Open",
-                        "Pending",
-                        "Resolved",
-                        "Closed"
-                    ]
-                },
-                {
-                    "title": "Priorities",
-                    "type": "select",
-                    "name": "priorities",
-                    "required": false,
-                    "visible": true,
-                    "editable": true,
-                    "value": "Low",
-                    "tooltip": "Select the priority of the ticket request for which you want to retrieve tickets from from Fresh Service Desk MSP.",
-                    "options": [
-                        "Low",
-                        "Medium",
-                        "High",
-                        "Urgent"
-                    ]
-                },
-                {
-                    "title": "File IRI or Attachment IRI",
-                    "required": false,
-                    "editable": true,
-                    "visible": true,
-                    "type": "select",
-                    "options": [
-                        "Attachment ID",
-                        "File IRI"
-                    ],
-                    "onchange": {
-                        "Attachment ID": [
-                            {
-                                "title": "Attachment ID",
-                                "description": "Specify the attachment ID of the file in the FortiSOAR Attachments module.",
-                                "required": false,
-                                "editable": true,
-                                "visible": true,
-                                "type": "text",
-                                "name": "value",
-                                "value": ""
-                            }
-                        ],
-                        "File IRI": [
-                            {
-                                "title": "File IRI",
-                                "description": "Specify the File IRI of the file in the FortiSOAR Attachments module.",
-                                "required": false,
-                                "editable": true,
-                                "visible": true,
-                                "type": "text",
-                                "name": "value",
-                                "value": ""
-                            }
-                        ]
-                    },
-                    "value": "Attachment ID",
-                    "name": "path",
-                    "description": "Specify the file to add as an attachment to the specified Jira ticket. You can select from the following options: Attachment ID: Specify the attachment ID of the file in the FortiSOAR Attachments module. File IRI: Specify the File IRI of the file in the FortiSOAR Attachments module."
-                }
-            ],
-            "output_schema": [
-                {
-                "ticket": {
-                    "cc_emails": [],
-                    "fwd_emails": [],
-                    "reply_cc_emails": [
-                    ],
-                    "fr_escalated": "",
-                    "spam": "",
-                    "email_config_id": "",
-                    "group_id": "",
-                    "priority": "",
-                    "requester_id": "",
-                    "requested_for_id": "",
-                    "responder_id": "",
-                    "source": "",
-                    "status": "",
-                    "subject": "",
-                    "to_emails": "",
-                    "department_id": "",
-                    "id": "",
-                    "type": "",
-                    "due_by": "",
-                    "fr_due_by": "",
-                    "is_escalated": "",
-                    "description": "",
-                    "description_text": "",
-                    "category": "",
-                    "sub_category": "",
-                    "item_category": "",
-                    "custom_fields": {
-                      "auto_checkbox": ""
-                    },
-                    "created_at": "",
-                    "updated_at": "",
-                    "tags": [],
-                    "attachments": [],
-                    "workspace_id": "",
-                    "resolution_notes": "",
-                    "resolution_notes_html": ""
-                  }
-                }
-            ]
-        },
-        {
-            "title": "Filter Tickets By Query",
-            "operation": "filter_tickets_by_query",
-            "description": "Retrieves list of tickets matching the specified query.",
-            "annotation": "filter_tickets_by_query",
-            "category": "investigation",
-            "parameters": [
-                {
-                    "title": "Query",
-                    "type": "text",
-                    "name": "query",
-                    "required": true,
-                    "visible": true,
-                    "editable": true,
-                    "value": "priority: 1 AND status: 2 OR urgency: 3",
-                    "placeholder": "e.g. 22",
-                    "tooltip": "Specify query to filter ticket request for which you want to retrieve list of tickets from Fresh Service Desk MSP."
-                }
-            ],
-            "output_schema": [
-                {
-                "ticket": {
-                    "cc_emails": [],
-                    "fwd_emails": [],
-                    "reply_cc_emails": [
-                    ],
-                    "fr_escalated": "",
-                    "spam": "",
-                    "email_config_id": "",
-                    "group_id": "",
-                    "priority": "",
-                    "requester_id": "",
-                    "requested_for_id": "",
-                    "responder_id": "",
-                    "source": "",
-                    "status": "",
-                    "subject": "",
-                    "to_emails": "",
-                    "department_id": "",
-                    "id": "",
-                    "type": "",
-                    "due_by": "",
-                    "fr_due_by": "",
-                    "is_escalated": "",
-                    "description": "",
-                    "description_text": "",
-                    "category": "",
-                    "sub_category": "",
-                    "item_category": "",
-                    "custom_fields": {
-                      "auto_checkbox": ""
-                    },
-                    "created_at": "",
-                    "updated_at": "",
-                    "tags": [],
-                    "attachments": [],
-                    "workspace_id": "",
-                    "resolution_notes": "",
-                    "resolution_notes_html": ""
-                  }
-                }
-            ],
-            "open": false
-        }
+  "name": "fresh-service-desk-msp",
+  "version": "1.0.0",
+  "label": "Fresh Service Desk MSP",
+  "description": "Fresh Service Desk MSP is a cloud-based service desk and IT service management (ITSM) platform designed to streamline service management for businesses. It offers a range of features including incident management, problem management, change management, asset management, and more. Freshservice provides a user-friendly interface for managing service requests, automating workflows, tracking assets, and generating reports. Its multi-tenant architecture ensures data segregation and security for different clients. The connector for Freshservice enables automated actions such as creating, updating, deleting, and closing tickets, enhancing the efficiency of service delivery for managed service providers.",
+  "publisher": "spryIQ.co",
+  "icon_small_name": "Fresh_Service_Small.png",
+  "icon_large_name": "Fresh_Service_Large.png",
+  "cs_compatible": true,
+  "cs_approved": false,
+  "category": "Ticket Management",
+  "help_online": "https://github.com/fortinet-fortisoar/connector-fresh-service-desk-msp/blob/release/1.0.0/docs/FreshServiceDeskMspConnectorDoc.md",
+  "configuration": {
+    "fields": [
+      {
+        "title": "Server URL",
+        "type": "text",
+        "name": "server",
+        "required": true,
+        "visible": true,
+        "editable": true,
+        "placeholder": "https://helpdesk.freshservice.com or helpdesk.freshservice.com",
+        "value": "",
+        "description": "Specify the URL of the Fresh Service Desk MSP server to which you will connect and perform the automated operations.",
+        "tooltip": "Specify the URL of the Fresh Service Desk MSP server to which you will connect and perform the automated operations."
+      },
+      {
+        "title": "Username",
+        "type": "text",
+        "name": "username",
+        "required": true,
+        "visible": true,
+        "editable": true,
+        "placeholder": "gvVU1asssHdq1TPjQtJ1I",
+        "value": "",
+        "description": "Specify the API key that is configured for your account to access the Fresh Service Desk MSP endpoint.",
+        "tooltip": "Specify the API key that is configured for your account to access the Fresh Service Desk MSP endpoint."
+      },
+      {
+        "title": "Password",
+        "type": "password",
+        "name": "password",
+        "required": true,
+        "visible": true,
+        "editable": true,
+        "value": "",
+        "description": "Specify the password that is configured for your account to access the Fresh Service Desk MSP endpoint.",
+        "tooltip": "Specify the password that is configured for your account to access the Fresh Service Desk MSP endpoint."
+      },
+      {
+        "title": "Verify SSL",
+        "type": "checkbox",
+        "name": "verify_ssl",
+        "required": false,
+        "visible": true,
+        "editable": true,
+        "description": "Specifies whether the SSL certificate for the server is to be verified or not.By default, this option is set as True.",
+        "value": true
+      }
     ]
+  },
+  "operations": [
+    {
+      "title": "Create Ticket",
+      "operation": "create_ticket",
+      "description": "Creates a ticket in Fresh Service Desk MSP based on the requester, subject, and other input parameters you have specified.",
+      "annotation": "create_ticket",
+      "category": "investigation",
+      "parameters": [
+        {
+          "title": "Subject",
+          "type": "text",
+          "name": "subject",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "description": "Specify the subject of the ticket request that you want to create in Fresh Service Desk MSP.",
+          "tooltip": "Specify the subject of the ticket request that you want to create in Fresh Service Desk MSP."
+        },
+        {
+          "title": "Description",
+          "type": "textarea",
+          "name": "description",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "description": "(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP.",
+          "tooltip": "(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP."
+        },
+        {
+          "title": "Email",
+          "type": "email",
+          "name": "email",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "description": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.",
+          "tooltip": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact."
+        },
+        {
+          "title": "CC Email",
+          "type": "text",
+          "name": "cc_emails",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "placeholder": "Email addresses comma separated",
+          "description": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.",
+          "tooltip": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact."
+        },
+        {
+          "title": "Status",
+          "type": "select",
+          "name": "status",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "Open",
+          "tooltip": "Select the status of the ticket request to create in Fresh Service Desk MSP.",
+          "options": [
+            "Open",
+            "Pending",
+            "Resolved",
+            "Closed"
+          ]
+        },
+        {
+          "title": "Priorities",
+          "type": "select",
+          "name": "priorities",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "Low",
+          "tooltip": "Select the priority of the ticket request to create in Fresh Service Desk MSP.",
+          "options": [
+            "Low",
+            "Medium",
+            "High",
+            "Urgent"
+          ]
+        }
+      ],
+      "open": false,
+      "output_schema": [
+        {
+          "ticket": {
+            "cc_emails": [],
+            "fwd_emails": [],
+            "reply_cc_emails": [
+            ],
+            "fr_escalated": "",
+            "spam": "",
+            "email_config_id": "",
+            "group_id": "",
+            "priority": "",
+            "requester_id": "",
+            "requested_for_id": "",
+            "responder_id": "",
+            "source": "",
+            "status": "",
+            "subject": "",
+            "to_emails": "",
+            "department_id": "",
+            "id": "",
+            "type": "",
+            "due_by": "",
+            "fr_due_by": "",
+            "is_escalated": "",
+            "description": "",
+            "description_text": "",
+            "category": "",
+            "sub_category": "",
+            "item_category": "",
+            "custom_fields": {
+              "auto_checkbox": ""
+            },
+            "created_at": "",
+            "updated_at": "",
+            "tags": [],
+            "attachments": [],
+            "workspace_id": "",
+            "resolution_notes": "",
+            "resolution_notes_html": ""
+          }
+        }
+      ]
+    },
+    {
+      "title": "Get Ticket By ID",
+      "operation": "get_ticket_by_id",
+      "description": "Retrieves details of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
+      "annotation": "get_ticket_by_id",
+      "category": "investigation",
+      "parameters": [
+        {
+          "title": "Ticket ID",
+          "type": "text",
+          "name": "ticket_id",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "placeholder": "Numerical e.g: 20",
+          "description": "Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP.",
+          "tooltip": "Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP."
+        }
+      ],
+      "output_schema": [
+        {
+          "ticket": {
+            "cc_emails": [],
+            "fwd_emails": [],
+            "reply_cc_emails": [
+            ],
+            "fr_escalated": "",
+            "spam": "",
+            "email_config_id": "",
+            "group_id": "",
+            "priority": "",
+            "requester_id": "",
+            "requested_for_id": "",
+            "responder_id": "",
+            "source": "",
+            "status": "",
+            "subject": "",
+            "to_emails": "",
+            "department_id": "",
+            "id": "",
+            "type": "",
+            "due_by": "",
+            "fr_due_by": "",
+            "is_escalated": "",
+            "description": "",
+            "description_text": "",
+            "category": "",
+            "sub_category": "",
+            "item_category": "",
+            "custom_fields": {
+              "auto_checkbox": ""
+            },
+            "created_at": "",
+            "updated_at": "",
+            "tags": [],
+            "attachments": [],
+            "workspace_id": "",
+            "resolution_notes": "",
+            "resolution_notes_html": ""
+          }
+        }
+      ],
+      "open": false
+    },
+    {
+      "title": "Delete Ticket By ID",
+      "operation": "delete_ticket_by_id",
+      "description": "Delete of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
+      "annotation": "delete_ticket_by_id",
+      "category": "investigation",
+      "parameters": [
+        {
+          "title": "Ticket ID",
+          "type": "text",
+          "name": "ticket_id",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "placeholder": "Numerical e.g: 20",
+          "description": "Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP.",
+          "tooltip": "Specify id  of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP."
+        }
+      ],
+      "output_schema": [
+        {
+          "ticket": {
+            "cc_emails": [],
+            "fwd_emails": [],
+            "reply_cc_emails": [
+            ],
+            "fr_escalated": "",
+            "spam": "",
+            "email_config_id": "",
+            "group_id": "",
+            "priority": "",
+            "requester_id": "",
+            "requested_for_id": "",
+            "responder_id": "",
+            "source": "",
+            "status": "",
+            "subject": "",
+            "to_emails": "",
+            "department_id": "",
+            "id": "",
+            "type": "",
+            "due_by": "",
+            "fr_due_by": "",
+            "is_escalated": "",
+            "description": "",
+            "description_text": "",
+            "category": "",
+            "sub_category": "",
+            "item_category": "",
+            "custom_fields": {
+              "auto_checkbox": ""
+            },
+            "created_at": "",
+            "updated_at": "",
+            "tags": [],
+            "attachments": [],
+            "workspace_id": "",
+            "resolution_notes": "",
+            "resolution_notes_html": ""
+          }
+        }
+      ],
+      "open": false
+    },
+    {
+      "title": "Update Ticket",
+      "operation": "update_ticket",
+      "description": "Update a ticket in Fresh Service Desk MSP based on the ticket id and other input parameters you have specified.",
+      "annotation": "update_ticket",
+      "category": "investigation",
+      "parameters": [
+        {
+          "title": "Ticket ID",
+          "type": "text",
+          "name": "ticket_id",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "placeholder": "e.g. 22",
+          "tooltip": "Specify id of the ticket for which you want to retrieve ticket details from Fresh Service Desk MSP."
+        },
+        {
+          "title": "Subject",
+          "type": "text",
+          "name": "subject",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "description": "Specify the subject of the ticket request that you want to update in Fresh Service Desk MSP.",
+          "tooltip": "Specify the subject of the ticket request that you want to update in Fresh Service Desk MSP."
+        },
+        {
+          "title": "Description",
+          "type": "textarea",
+          "name": "description",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "description": "Specify the description of the ticket request that you want to update in Fresh Service Desk MSP.",
+          "tooltip": "Specify the description of the ticket request that you want to update in Fresh Service Desk MSP."
+        },
+        {
+          "title": "Email",
+          "type": "email",
+          "name": "email",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "",
+          "description": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.",
+          "tooltip": "Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact."
+        },
+        {
+          "title": "Status",
+          "type": "select",
+          "name": "status",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "Open",
+          "tooltip": "Select the status of the ticket request for which you want to create tickets from Fresh Service Desk MSP.",
+          "options": [
+            "Open",
+            "Pending",
+            "Resolved",
+            "Closed"
+          ]
+        },
+        {
+          "title": "Priorities",
+          "type": "select",
+          "name": "priorities",
+          "required": false,
+          "visible": true,
+          "editable": true,
+          "value": "Low",
+          "tooltip": "Select the priority of the ticket request for which you want to retrieve tickets from from Fresh Service Desk MSP.",
+          "options": [
+            "Low",
+            "Medium",
+            "High",
+            "Urgent"
+          ]
+        },
+        {
+          "title": "File IRI or Attachment IRI",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "type": "select",
+          "options": [
+            "Attachment ID",
+            "File IRI"
+          ],
+          "onchange": {
+            "Attachment ID": [
+              {
+                "title": "Attachment ID",
+                "description": "Specify the attachment ID of the file in the FortiSOAR Attachments module.",
+                "required": false,
+                "editable": true,
+                "visible": true,
+                "type": "text",
+                "name": "value",
+                "value": ""
+              }
+            ],
+            "File IRI": [
+              {
+                "title": "File IRI",
+                "description": "Specify the File IRI of the file in the FortiSOAR Attachments module.",
+                "required": false,
+                "editable": true,
+                "visible": true,
+                "type": "text",
+                "name": "value",
+                "value": ""
+              }
+            ]
+          },
+          "value": "Attachment ID",
+          "name": "path",
+          "description": "Specify the file to add as an attachment to the specified Jira ticket. You can select from the following options: Attachment ID: Specify the attachment ID of the file in the FortiSOAR Attachments module. File IRI: Specify the File IRI of the file in the FortiSOAR Attachments module."
+        }
+      ],
+      "output_schema": [
+        {
+          "ticket": {
+            "cc_emails": [],
+            "fwd_emails": [],
+            "reply_cc_emails": [
+            ],
+            "fr_escalated": "",
+            "spam": "",
+            "email_config_id": "",
+            "group_id": "",
+            "priority": "",
+            "requester_id": "",
+            "requested_for_id": "",
+            "responder_id": "",
+            "source": "",
+            "status": "",
+            "subject": "",
+            "to_emails": "",
+            "department_id": "",
+            "id": "",
+            "type": "",
+            "due_by": "",
+            "fr_due_by": "",
+            "is_escalated": "",
+            "description": "",
+            "description_text": "",
+            "category": "",
+            "sub_category": "",
+            "item_category": "",
+            "custom_fields": {
+              "auto_checkbox": ""
+            },
+            "created_at": "",
+            "updated_at": "",
+            "tags": [],
+            "attachments": [],
+            "workspace_id": "",
+            "resolution_notes": "",
+            "resolution_notes_html": ""
+          }
+        }
+      ]
+    },
+    {
+      "title": "Filter Tickets By Query",
+      "operation": "filter_tickets_by_query",
+      "description": "Retrieves list of tickets matching the specified query.",
+      "annotation": "filter_tickets_by_query",
+      "category": "investigation",
+      "parameters": [
+        {
+          "title": "Query",
+          "type": "text",
+          "name": "query",
+          "required": true,
+          "visible": true,
+          "editable": true,
+          "value": "priority: 1 AND status: 2 OR urgency: 3",
+          "placeholder": "e.g. 22",
+          "tooltip": "Specify query to filter ticket request for which you want to retrieve list of tickets from Fresh Service Desk MSP."
+        }
+      ],
+      "output_schema": [
+        {
+          "ticket": {
+            "cc_emails": [],
+            "fwd_emails": [],
+            "reply_cc_emails": [
+            ],
+            "fr_escalated": "",
+            "spam": "",
+            "email_config_id": "",
+            "group_id": "",
+            "priority": "",
+            "requester_id": "",
+            "requested_for_id": "",
+            "responder_id": "",
+            "source": "",
+            "status": "",
+            "subject": "",
+            "to_emails": "",
+            "department_id": "",
+            "id": "",
+            "type": "",
+            "due_by": "",
+            "fr_due_by": "",
+            "is_escalated": "",
+            "description": "",
+            "description_text": "",
+            "category": "",
+            "sub_category": "",
+            "item_category": "",
+            "custom_fields": {
+              "auto_checkbox": ""
+            },
+            "created_at": "",
+            "updated_at": "",
+            "tags": [],
+            "attachments": [],
+            "workspace_id": "",
+            "resolution_notes": "",
+            "resolution_notes_html": ""
+          }
+        }
+      ],
+      "open": false
+    }
+  ]
 }
