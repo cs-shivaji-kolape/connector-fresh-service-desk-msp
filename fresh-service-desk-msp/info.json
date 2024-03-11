@@ -20,7 +20,7 @@
         "visible": true,
         "editable": true,
         "placeholder": "https://helpdesk.freshservice.com or helpdesk.freshservice.com",
-        "value": "",
+        "value": "https://helpdesk.freshservice.com",
         "description": "Specify the URL of the Fresh Service Desk MSP server to which you will connect and perform the automated operations.",
         "tooltip": "Specify the URL of the Fresh Service Desk MSP server to which you will connect and perform the automated operations."
       },
