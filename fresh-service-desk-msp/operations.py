@@ -144,7 +144,7 @@ def create_ticket(config, params, **kwargs):
 
         if cc_emails:
             payload['cc_emails'] = cc_emails.split(',')
-        return payload
+
         return make_api_call(config, method='POST', endpoint='/api/v2/tickets', data=json.dumps(payload)).json()
     except Exception as e:
         logger.exception('{}'.format(e))
@@ -159,7 +159,7 @@ def get_ticket_by_id(config, params, **kwargs):
     except Exception as e:
         logger.exception('{}'.format(e))
         raise ConnectorError('{}'.format(e))
-    
+
 def delete_ticket_by_id(config, params, **kwargs):
     try:
         response = make_api_call(config, method='DELETE', endpoint='/api/v2/tickets/{0}'.format(params.get('ticket_id')))
