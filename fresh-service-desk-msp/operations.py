@@ -1,37 +1,32 @@
 """
 Copyright start
 MIT License
-Copyright (c) 2023 Fortinet Inc
+Copyright (c) 2024 Fortinet Inc
 Copyright end
 """
 
-import requests
 import json
-import base64
 from os.path import join
+import requests
 from connectors.core.connector import get_logger, ConnectorError
-from integrations.crudhub import make_request
 from connectors.cyops_utilities.builtins import download_file_from_cyops
+from integrations.crudhub import make_request
+from .constants import STATUS_MAP, PRIORITY_MAP, ERROR_MSGS
+
 logger = get_logger('fresh-service-desk-msp')
 
 
 def get_config(config):
     try:
         if config is not None:
-            server_url = config.get('server')
+            server_url = config.get('server', '').strip('/')
             username = config.get('username')
             password = config.get('password')
             verify_ssl = config.get('verify_ssl')
             return server_url, username, password, verify_ssl
     except Exception as Err:
-        logger.warn('Error occured while extracting conf :[{0}] '.format(Err))
+        logger.warn('Error occurred while extracting conf :[{0}] '.format(Err))
         raise ConnectorError(Err)
-
-
-def generate_basic_auth_header(username, password):
-    credentials = f"{username}:{password}"
-    credentials_b64 = base64.b64encode(credentials.encode('utf-8')).decode('utf-8')
-    return f"Basic {credentials_b64}"
 
 
 def check_health(config):
@@ -42,8 +37,8 @@ def check_health(config):
         if response.status_code in [200, 201]:
             return response.json()
         else:
-            raise ConnectorError('Error [{0}] occurred while fetching jira ticket status with status [{1}] code : '.
-                                 format(response.reason, response.status_code))
+            raise ConnectorError('Error [{0}] occurred while fetching ticket with status [{1}] code : '.
+                                 format(response.text, response.status_code))
     except Exception as err:
         raise ConnectorError(err)
 
@@ -51,6 +46,7 @@ def check_health(config):
 def get_file_data(iri_type, iri, **kwargs):
     try:
         file_name = None
+        file_iri = None
         if iri_type == 'Attachment ID':
             if not iri.startswith('/api/3/attachments/'):
                 iri = '/api/3/attachments/{0}'.format(iri)
@@ -63,6 +59,8 @@ def get_file_data(iri_type, iri, **kwargs):
                 file_iri = iri
             else:
                 file_iri = iri
+        if not file_iri:
+            raise ConnectorError('Attachment IRI or File IRI must not be empty')
         file_download_response = download_file_from_cyops(file_iri)
         if not file_name:
             file_name = file_download_response['filename']
@@ -75,44 +73,39 @@ def get_file_data(iri_type, iri, **kwargs):
 
 
 def make_api_call(config, method='GET', endpoint=None, files=None, data=None):
-    server, username, password, verify_ssl = get_config(config)
-    if server.startswith('https://'):
-        server = server.strip('/')
-    else:
-        server = 'https://{0}'.format(server)
+    server_url, username, password, verify_ssl = get_config(config)
+    if not server_url.startswith('https://') and not server_url.startswith('http://'):
+        server_url = 'https://' + server_url
     if files:
         headers = None
     else:
         headers = {'content-type': 'application/json', 'accept': 'application/json'}
     if endpoint:
-        url = '{0}{1}'.format(server, endpoint)
-    else:
-        url = server
-        return url
-    logger.info('Request URL {}'.format(url))
+        server_url = '{0}{1}'.format(server_url, endpoint)
+    logger.debug('API Request URL {}'.format(server_url))
     try:
-        response = requests.request(url=url, method=method, auth=(username, password), headers=headers, files=files,
+        response = requests.request(url=server_url, method=method, auth=(username, password), headers=headers,
+                                    files=files,
                                     data=data, verify=verify_ssl)
+        logger.debug('API Status Code: {}'.format(response.status_code))
         if response.status_code in [200, 201, 204]:
             return response
-        elif response.status_code == 401:
-            logger.info('Unauthorized: Invalid credentials')
-            raise ConnectorError('Unauthorized: Invalid credentials')
+        if ERROR_MSGS.get(response.status_code):
+            logger.error('Failed to request API {0} response is : {1} with reason: {2}'.format(str(server_url), str(response.content),
+                                                                                  str(response.reason)))
+            raise ConnectorError('{0}: {1}'.format(ERROR_MSGS.get(response.status_code), response.text))
+
         else:
-            logger.info(
-                'Failed to request API {0} response is : {1} with reason: {2}'.format(str(url), str(response.content),
-                                                                                      str(response.reason)))
-            raise ConnectorError(
-                'Failed to request API {0} response is :{1} with reason: {2}'.format(str(url), str(response.content),
-                                                                                     str(response.reason)))
+            logger.error('error: {}'.format(response.reason))
+            raise ConnectorError('API Response: {0} with error {1}: '.format(response.text, response.reason))
     except requests.exceptions.SSLError as e:
-        logger.exception('{}'.format(e))
+        logger.error('{}'.format(e))
         raise ConnectorError('{}'.format('SSL certificate validation failed'))
     except requests.exceptions.ConnectionError as e:
-        logger.exception('{}'.format(e))
+        logger.error('{}'.format(e))
         raise ConnectorError('{}'.format('The request timed out while trying to connect to the remote server'))
     except Exception as e:
-        logger.exception('{}'.format(e))
+        logger.error('{}'.format(e))
         raise ConnectorError('{}'.format(e))
 
 
@@ -124,7 +117,7 @@ def create_ticket(config, params, **kwargs):
         email = params.pop('email', None)
         status = params.pop('status', None)
         priorities = params.pop('priorities', None)
-        cc_emails = params.pop('cc_emails', None)
+        cc_emails = params.pop('cc_emails', '')
         if subject:
             payload['subject'] = subject
 
@@ -135,12 +128,10 @@ def create_ticket(config, params, **kwargs):
             payload['email'] = email
 
         if status:
-            status_map = {'Open': 2, 'Pending': 3, 'Resolved': 4, 'Closed': 5}
-            payload['status'] = status_map.get(status, 2)  # Default to Open if status is not recognized
+            payload['status'] = STATUS_MAP.get(status, 2)  # Default to Open if status is not recognized
 
         if priorities:
-            priority_map = {'Low': 1, 'Medium': 2, 'High': 3, 'Urgent': 4}
-            payload['priority'] = priority_map.get(priorities, 2)  # Default to Medium if priority is not recognized
+            payload['priority'] = PRIORITY_MAP.get(priorities, 2)  # Default to Medium if priority is not recognized
 
         if cc_emails:
             payload['cc_emails'] = cc_emails.split(',')
@@ -160,9 +151,11 @@ def get_ticket_by_id(config, params, **kwargs):
         logger.exception('{}'.format(e))
         raise ConnectorError('{}'.format(e))
 
+
 def delete_ticket_by_id(config, params, **kwargs):
     try:
-        response = make_api_call(config, method='DELETE', endpoint='/api/v2/tickets/{0}'.format(params.get('ticket_id')))
+        response = make_api_call(config, method='DELETE',
+                                 endpoint='/api/v2/tickets/{0}'.format(params.get('ticket_id')))
         response_json = response.json()
         return response_json
     except Exception as e:
@@ -172,7 +165,8 @@ def delete_ticket_by_id(config, params, **kwargs):
 
 def filter_tickets_by_query(config, params, **kwargs):
     try:
-        response = make_api_call(config, method='GET', endpoint='/api/v2/search/tickets?query="{0}"'.format(params.get('query')))
+        response = make_api_call(config, method='GET',
+                                 endpoint='/api/v2/search/tickets?query="{0}"'.format(params.get('query')))
         response_json = response.json()
         return response_json
     except Exception as e:
@@ -181,7 +175,6 @@ def filter_tickets_by_query(config, params, **kwargs):
 
 
 def update_ticket(config, params, **kwargs):
-
     payload = {}
     ticket_id = params.get('ticket_id')
     subject = params.pop('subject', None)
@@ -203,12 +196,10 @@ def update_ticket(config, params, **kwargs):
             payload['email'] = email
 
         if status:
-            status_map = {'Open': 2, 'Pending': 3, 'Resolved': 4, 'Closed': 5}
-            payload["status"] = status_map.get(status)
+            payload["status"] = STATUS_MAP.get(status)
 
         if priorities:
-            priority_map = {'Low': 1, 'Medium': 2, 'High': 3, 'Urgent': 4}
-            payload['priority'] = priority_map.get(priorities)
+            payload['priority'] = PRIORITY_MAP.get(priorities)
 
         if iri_type and iri:
             file_name, file_path = get_file_data(iri_type, iri)
