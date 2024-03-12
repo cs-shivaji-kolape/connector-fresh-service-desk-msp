@@ -1,3 +1,10 @@
+"""
+Copyright start
+MIT License
+Copyright (c) 2024 Fortinet Inc
+Copyright end
+"""
+
 ERROR_MSGS = {
     400: 'Bad/Invalid Request',
     401: 'Unauthorized: Invalid credentials or token provided failed to authorize',
