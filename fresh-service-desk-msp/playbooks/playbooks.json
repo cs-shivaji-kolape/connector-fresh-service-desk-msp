@@ -2,15 +2,12 @@
   "type": "workflow_collections",
   "data": [
     {
+      "uuid": "cedfce97-7a27-4628-b6dd-d6d364e02406",
       "@type": "WorkflowCollection",
       "name": "Sample - Fresh Service Desk MSP - 1.0.0",
-      "description": "Sample playbooks for \"Fresh Service Desk MSP\" connector. If you are planning to use any of the sample playbooks in your environment, ensure that you clone those playbooks and move them to a different collection, since the sample playbook collection gets deleted during connector upgrade and delete.",
+      "description": "Fresh Service Desk MSP is a cloud-based service desk and IT service management (ITSM) platform designed to streamline service management for businesses. It offers a range of features including incident management, problem management, change management, asset management, and more. Freshservice provides a user-friendly interface for managing service requests, automating workflows, tracking assets, and generating reports. Its multi-tenant architecture ensures data segregation and security for different clients. The connector for Freshservice enables automated actions such as creating, updating, deleting, and closing tickets, enhancing the efficiency of service delivery for managed service providers.",
       "visible": true,
-      "image": "",
-      "uuid": "f0fb0b45-3fc5-47eb-a5bc-f0f9e3d0c240",
-      "id": 235,
-      "deletedAt": null,
-      "importedBy": [],
+      "image": null,
       "recordTags": [
         "Fresh",
         "fresh-service-desk-msp"
@@ -18,26 +15,142 @@
       "workflows": [
         {
           "@type": "Workflow",
+          "uuid": "498b5c02-54fd-4e2c-b290-0b761d4a6fec",
+          "collection": "/api/3/workflow_collections/cedfce97-7a27-4628-b6dd-d6d364e02406",
           "triggerLimit": null,
-          "name": "Get Ticket By ID",
-          "aliasName": null,
+          "description": "Creates a ticket in Fresh Service Desk MSP based on the requester, subject, and other input parameters you have specified.",
+          "name": "Create Ticket",
           "tag": "#Fresh Service Desk MSP",
-          "description": "Retrieves details of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
+          "recordTags": [
+            "Fresh",
+            "fresh-service-desk-msp"
+          ],
           "isActive": false,
           "debug": false,
           "singleRecordExecution": false,
-          "remoteExecutableFlag": false,
           "parameters": [],
           "synchronous": false,
-          "lastModifyDate": 1710161479,
-          "collection": "/api/3/workflow_collections/f0fb0b45-3fc5-47eb-a5bc-f0f9e3d0c240",
-          "versions": [],
-          "triggerStep": "/api/3/workflow_steps/56a6b219-9f29-4635-9ad3-3c0043d89cab",
+          "triggerStep": "/api/3/workflow_steps/3ff16c01-a9e5-4548-b218-779be3b5fdc1",
           "steps": [
             {
+              "uuid": "3ff16c01-a9e5-4548-b218-779be3b5fdc1",
+              "@type": "WorkflowStep",
+              "name": "Start",
+              "description": null,
+              "status": null,
+              "arguments": {
+                "route": "41f74d88-65f7-4bb9-afdc-88e08bc4b1c8",
+                "title": "Fresh Service Desk MSP: Create Ticket",
+                "resources": [
+                  "alerts"
+                ],
+                "inputVariables": [],
+                "step_variables": {
+                  "input": {
+                    "records": "{{vars.input.records[0]}}"
+                  }
+                },
+                "singleRecordExecution": false,
+                "noRecordExecution": true,
+                "executeButtonText": "Execute"
+              },
+              "left": "20",
+              "top": "20",
+              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a"
+            },
+            {
+              "uuid": "a16379a0-0001-40a9-9866-2d8fa0f34afb",
+              "@type": "WorkflowStep",
+              "name": "Create Ticket",
+              "description": null,
+              "status": null,
+              "arguments": {
+                "name": "Fresh Service Desk MSP",
+                "config": "''",
+                "params": {
+                  "subject": "",
+                  "email": "",
+                  "cc_emails": "",
+                  "status": "Open",
+                  "priorities": "Low",
+                  "description": ""
+                },
+                "version": "1.0.0",
+                "connector": "fresh-service-desk-msp",
+                "operation": "create_ticket",
+                "operationTitle": "Create Ticket",
+                "step_variables": {
+                  "output_data": "{{vars.result}}"
+                }
+              },
+              "left": "188",
+              "top": "120",
+              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671"
+            }
+          ],
+          "routes": [
+            {
+              "@type": "WorkflowRoute",
+              "uuid": "9bdae841-34dc-444a-9992-9e347d3b584f",
+              "label": null,
+              "isExecuted": false,
+              "name": "Start-> Create Ticket",
+              "sourceStep": "/api/3/workflow_steps/3ff16c01-a9e5-4548-b218-779be3b5fdc1",
+              "targetStep": "/api/3/workflow_steps/a16379a0-0001-40a9-9866-2d8fa0f34afb"
+            }
+          ]
+        },
+        {
+          "@type": "Workflow",
+          "uuid": "73ce4b75-b402-4e48-94ee-19b8d543599c",
+          "collection": "/api/3/workflow_collections/cedfce97-7a27-4628-b6dd-d6d364e02406",
+          "triggerLimit": null,
+          "description": "Retrieves details of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
+          "name": "Get Ticket By ID",
+          "tag": "#Fresh Service Desk MSP",
+          "recordTags": [
+            "Fresh",
+            "fresh-service-desk-msp"
+          ],
+          "isActive": false,
+          "debug": false,
+          "singleRecordExecution": false,
+          "parameters": [],
+          "synchronous": false,
+          "triggerStep": "/api/3/workflow_steps/ec64c1d6-b427-4897-b8ee-388641b92cd0",
+          "steps": [
+            {
+              "uuid": "ec64c1d6-b427-4897-b8ee-388641b92cd0",
+              "@type": "WorkflowStep",
+              "name": "Start",
+              "description": null,
+              "status": null,
+              "arguments": {
+                "route": "5dafc2f3-2bb8-41d9-b768-21c88f99f050",
+                "title": "Fresh Service Desk MSP: Get Ticket By ID",
+                "resources": [
+                  "alerts"
+                ],
+                "inputVariables": [],
+                "step_variables": {
+                  "input": {
+                    "records": "{{vars.input.records[0]}}"
+                  }
+                },
+                "singleRecordExecution": false,
+                "noRecordExecution": true,
+                "executeButtonText": "Execute"
+              },
+              "left": "20",
+              "top": "20",
+              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a"
+            },
+            {
+              "uuid": "a8d662d5-a898-4d9b-8224-b196990be4d0",
               "@type": "WorkflowStep",
               "name": "Get Ticket By ID",
               "description": null,
+              "status": null,
               "arguments": {
                 "name": "Fresh Service Desk MSP",
                 "config": "''",
@@ -52,20 +165,51 @@
                   "output_data": "{{vars.result}}"
                 }
               },
-              "status": null,
-              "top": "120",
               "left": "188",
-              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671",
-              "group": null,
-              "uuid": "1f6afd88-dad9-4949-92b1-4cb7b7d1b2a8"
-            },
+              "top": "120",
+              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671"
+            }
+          ],
+          "routes": [
             {
+              "@type": "WorkflowRoute",
+              "uuid": "97a7357d-1b84-4f90-a241-40e2b4260031",
+              "label": null,
+              "isExecuted": false,
+              "name": "Start-> Get Ticket By ID",
+              "sourceStep": "/api/3/workflow_steps/ec64c1d6-b427-4897-b8ee-388641b92cd0",
+              "targetStep": "/api/3/workflow_steps/a8d662d5-a898-4d9b-8224-b196990be4d0"
+            }
+          ]
+        },
+        {
+          "@type": "Workflow",
+          "uuid": "06960c56-ce97-4b7e-99e3-83625925461f",
+          "collection": "/api/3/workflow_collections/cedfce97-7a27-4628-b6dd-d6d364e02406",
+          "triggerLimit": null,
+          "description": "Delete of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
+          "name": "Delete Ticket By ID",
+          "tag": "#Fresh Service Desk MSP",
+          "recordTags": [
+            "Fresh",
+            "fresh-service-desk-msp"
+          ],
+          "isActive": false,
+          "debug": false,
+          "singleRecordExecution": false,
+          "parameters": [],
+          "synchronous": false,
+          "triggerStep": "/api/3/workflow_steps/1c0643ca-c956-4ab1-b99d-9c240639a346",
+          "steps": [
+            {
+              "uuid": "1c0643ca-c956-4ab1-b99d-9c240639a346",
               "@type": "WorkflowStep",
               "name": "Start",
               "description": null,
+              "status": null,
               "arguments": {
-                "route": "dcfe1a40-93a0-4648-91b7-fb68e368525f",
-                "title": "Fresh Service Desk MSP: Get Ticket By ID",
+                "route": "bd40db7c-654c-47dc-a5c0-c5c255608bcd",
+                "title": "Fresh Service Desk MSP: Delete Ticket By ID",
                 "resources": [
                   "alerts"
                 ],
@@ -75,64 +219,20 @@
                     "records": "{{vars.input.records[0]}}"
                   }
                 },
-                "executeButtonText": "Execute",
+                "singleRecordExecution": false,
                 "noRecordExecution": true,
-                "singleRecordExecution": false
+                "executeButtonText": "Execute"
               },
-              "status": null,
-              "top": "20",
               "left": "20",
-              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
-              "group": null,
-              "uuid": "56a6b219-9f29-4635-9ad3-3c0043d89cab"
-            }
-          ],
-          "routes": [
+              "top": "20",
+              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a"
+            },
             {
-              "@type": "WorkflowRoute",
-              "name": "Start-> Get Ticket By ID",
-              "targetStep": "/api/3/workflow_steps/1f6afd88-dad9-4949-92b1-4cb7b7d1b2a8",
-              "sourceStep": "/api/3/workflow_steps/56a6b219-9f29-4635-9ad3-3c0043d89cab",
-              "label": null,
-              "isExecuted": false,
-              "group": null,
-              "uuid": "76cd2dd9-49e7-4763-9056-34f3cd28c5a2"
-            }
-          ],
-          "groups": [],
-          "priority": null,
-          "uuid": "3a524fd8-7707-47c5-9dbd-30d95896c256",
-          "id": 2732,
-          "owners": [],
-          "isPrivate": false,
-          "deletedAt": null,
-          "importedBy": [],
-          "recordTags": [
-            "fresh-service-desk-msp"
-          ]
-        },
-        {
-          "@type": "Workflow",
-          "triggerLimit": null,
-          "name": "Delete Ticket By ID",
-          "aliasName": null,
-          "tag": "#Fresh Service Desk MSP",
-          "description": "Delete of specific tickets from  Fresh Service Desk MSP on the input parameters you have specified.",
-          "isActive": false,
-          "debug": false,
-          "singleRecordExecution": false,
-          "remoteExecutableFlag": false,
-          "parameters": [],
-          "synchronous": false,
-          "lastModifyDate": 1710161474,
-          "collection": "/api/3/workflow_collections/f0fb0b45-3fc5-47eb-a5bc-f0f9e3d0c240",
-          "versions": [],
-          "triggerStep": "/api/3/workflow_steps/65d078a0-1190-4bce-b406-a68af3a359c5",
-          "steps": [
-            {
+              "uuid": "d1058ff7-8cc8-4879-adc2-dbb2e25af18f",
               "@type": "WorkflowStep",
               "name": "Delete Ticket By ID",
               "description": null,
+              "status": null,
               "arguments": {
                 "name": "Fresh Service Desk MSP",
                 "config": "''",
@@ -147,20 +247,51 @@
                   "output_data": "{{vars.result}}"
                 }
               },
-              "status": null,
-              "top": "120",
               "left": "188",
-              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671",
-              "group": null,
-              "uuid": "d5f28ae4-e5bf-44dd-bec2-8377bf1d7ad9"
-            },
+              "top": "120",
+              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671"
+            }
+          ],
+          "routes": [
             {
+              "@type": "WorkflowRoute",
+              "uuid": "af706b52-4a71-466f-a2ce-af75bb07c409",
+              "label": null,
+              "isExecuted": false,
+              "name": "Start-> Delete Ticket By ID",
+              "sourceStep": "/api/3/workflow_steps/1c0643ca-c956-4ab1-b99d-9c240639a346",
+              "targetStep": "/api/3/workflow_steps/d1058ff7-8cc8-4879-adc2-dbb2e25af18f"
+            }
+          ]
+        },
+        {
+          "@type": "Workflow",
+          "uuid": "0caf9c78-b9ac-4ad9-a81e-1d57835ba873",
+          "collection": "/api/3/workflow_collections/cedfce97-7a27-4628-b6dd-d6d364e02406",
+          "triggerLimit": null,
+          "description": "Update a ticket in Fresh Service Desk MSP based on the ticket id and other input parameters you have specified.",
+          "name": "Update Ticket",
+          "tag": "#Fresh Service Desk MSP",
+          "recordTags": [
+            "Fresh",
+            "fresh-service-desk-msp"
+          ],
+          "isActive": false,
+          "debug": false,
+          "singleRecordExecution": false,
+          "parameters": [],
+          "synchronous": false,
+          "triggerStep": "/api/3/workflow_steps/d9f6674b-c2f4-467d-9605-2a88a69184bf",
+          "steps": [
+            {
+              "uuid": "d9f6674b-c2f4-467d-9605-2a88a69184bf",
               "@type": "WorkflowStep",
               "name": "Start",
               "description": null,
+              "status": null,
               "arguments": {
-                "route": "04c97617-ba2c-4945-bf5e-9c94e1cc2ea4",
-                "title": "Fresh Service Desk MSP: Delete Ticket By ID",
+                "route": "a9b72aa1-1f8b-4a4f-a195-be1101d99211",
+                "title": "Fresh Service Desk MSP: Update Ticket",
                 "resources": [
                   "alerts"
                 ],
@@ -170,97 +301,85 @@
                     "records": "{{vars.input.records[0]}}"
                   }
                 },
-                "executeButtonText": "Execute",
+                "singleRecordExecution": false,
                 "noRecordExecution": true,
-                "singleRecordExecution": false
+                "executeButtonText": "Execute"
               },
-              "status": null,
-              "top": "20",
               "left": "20",
-              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
-              "group": null,
-              "uuid": "65d078a0-1190-4bce-b406-a68af3a359c5"
-            }
-          ],
-          "routes": [
+              "top": "20",
+              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a"
+            },
             {
-              "@type": "WorkflowRoute",
-              "name": "Start-> Delete Ticket By ID",
-              "targetStep": "/api/3/workflow_steps/d5f28ae4-e5bf-44dd-bec2-8377bf1d7ad9",
-              "sourceStep": "/api/3/workflow_steps/65d078a0-1190-4bce-b406-a68af3a359c5",
-              "label": null,
-              "isExecuted": false,
-              "group": null,
-              "uuid": "203a9719-5371-4f7f-955f-183e13bc1379"
-            }
-          ],
-          "groups": [],
-          "priority": null,
-          "uuid": "414b41ff-d44c-43fc-9e12-cce2456bc17f",
-          "id": 2733,
-          "owners": [],
-          "isPrivate": false,
-          "deletedAt": null,
-          "importedBy": [],
-          "recordTags": [
-            "fresh-service-desk-msp"
-          ]
-        },
-        {
-          "@type": "Workflow",
-          "triggerLimit": null,
-          "name": "Create Ticket",
-          "aliasName": null,
-          "tag": "#Fresh Service Desk MSP",
-          "description": "Creates a ticket in Fresh Service Desk MSP based on the requester, subject, and other input parameters you have specified.",
-          "isActive": false,
-          "debug": false,
-          "singleRecordExecution": false,
-          "remoteExecutableFlag": false,
-          "parameters": [],
-          "synchronous": false,
-          "lastModifyDate": 1710161483,
-          "collection": "/api/3/workflow_collections/f0fb0b45-3fc5-47eb-a5bc-f0f9e3d0c240",
-          "versions": [],
-          "triggerStep": "/api/3/workflow_steps/9aa37c6b-a740-495c-bcba-6f4f4096819b",
-          "steps": [
-            {
+              "uuid": "fd860728-60f3-4380-aed9-3ca86a5c7e28",
               "@type": "WorkflowStep",
-              "name": "Create Ticket",
+              "name": "Update Ticket",
               "description": null,
+              "status": null,
               "arguments": {
                 "name": "Fresh Service Desk MSP",
                 "config": "''",
                 "params": {
+                  "ticket_id": "",
+                  "subject": "",
+                  "description": "",
                   "email": "",
                   "status": "Open",
-                  "subject": "",
-                  "cc_emails": "",
                   "priorities": "Low",
-                  "description": ""
+                  "path": "Attachment ID"
                 },
                 "version": "1.0.0",
                 "connector": "fresh-service-desk-msp",
-                "operation": "create_ticket",
-                "operationTitle": "Create Ticket",
+                "operation": "update_ticket",
+                "operationTitle": "Update Ticket",
                 "step_variables": {
                   "output_data": "{{vars.result}}"
                 }
               },
-              "status": null,
-              "top": "120",
               "left": "188",
-              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671",
-              "group": null,
-              "uuid": "926ab1d4-00bf-4f47-bb56-5fb09fd5e406"
-            },
+              "top": "120",
+              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671"
+            }
+          ],
+          "routes": [
             {
+              "@type": "WorkflowRoute",
+              "uuid": "d88c0d27-77b5-4165-a41c-c1d2128903c7",
+              "label": null,
+              "isExecuted": false,
+              "name": "Start-> Update Ticket",
+              "sourceStep": "/api/3/workflow_steps/d9f6674b-c2f4-467d-9605-2a88a69184bf",
+              "targetStep": "/api/3/workflow_steps/fd860728-60f3-4380-aed9-3ca86a5c7e28"
+            }
+          ]
+        },
+        {
+          "@type": "Workflow",
+          "uuid": "6d175f6d-99d7-480f-b0db-5c430f33e5b9",
+          "collection": "/api/3/workflow_collections/cedfce97-7a27-4628-b6dd-d6d364e02406",
+          "triggerLimit": null,
+          "description": "Retrieves list of tickets matching the specified query.",
+          "name": "Filter Tickets By Query",
+          "tag": "#Fresh Service Desk MSP",
+          "recordTags": [
+            "Fresh",
+            "fresh-service-desk-msp"
+          ],
+          "isActive": false,
+          "debug": false,
+          "singleRecordExecution": false,
+          "parameters": [],
+          "synchronous": false,
+          "triggerStep": "/api/3/workflow_steps/ce6e0179-ae62-4a5a-a04e-8ed7456bc605",
+          "steps": [
+            {
+              "uuid": "ce6e0179-ae62-4a5a-a04e-8ed7456bc605",
               "@type": "WorkflowStep",
               "name": "Start",
               "description": null,
+              "status": null,
               "arguments": {
-                "route": "911e7b9e-cbb1-4d04-950d-f3e21c574384",
-                "title": "Fresh Service Desk MSP: Create Ticket",
+                "route": "f716a51c-2d8f-4242-bee7-6e22ff465bd5",
+                "title": "Fresh Service Desk MSP: Filter Tickets By Query",
                 "resources": [
                   "alerts"
                 ],
@@ -270,64 +389,20 @@
                     "records": "{{vars.input.records[0]}}"
                   }
                 },
-                "executeButtonText": "Execute",
+                "singleRecordExecution": false,
                 "noRecordExecution": true,
-                "singleRecordExecution": false
+                "executeButtonText": "Execute"
               },
-              "status": null,
-              "top": "20",
               "left": "20",
-              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
-              "group": null,
-              "uuid": "9aa37c6b-a740-495c-bcba-6f4f4096819b"
-            }
-          ],
-          "routes": [
+              "top": "20",
+              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a"
+            },
             {
-              "@type": "WorkflowRoute",
-              "name": "Start-> Create Ticket",
-              "targetStep": "/api/3/workflow_steps/926ab1d4-00bf-4f47-bb56-5fb09fd5e406",
-              "sourceStep": "/api/3/workflow_steps/9aa37c6b-a740-495c-bcba-6f4f4096819b",
-              "label": null,
-              "isExecuted": false,
-              "group": null,
-              "uuid": "77fe0d2f-28af-42d2-83f2-09feac4ab347"
-            }
-          ],
-          "groups": [],
-          "priority": null,
-          "uuid": "5e3396e5-ed44-4393-af0d-0a234d381610",
-          "id": 2731,
-          "owners": [],
-          "isPrivate": false,
-          "deletedAt": null,
-          "importedBy": [],
-          "recordTags": [
-            "fresh-service-desk-msp"
-          ]
-        },
-        {
-          "@type": "Workflow",
-          "triggerLimit": null,
-          "name": "Filter Tickets By Query",
-          "aliasName": null,
-          "tag": "#Fresh Service Desk MSP",
-          "description": "Retrieves list of tickets matching the specified query.",
-          "isActive": false,
-          "debug": false,
-          "singleRecordExecution": false,
-          "remoteExecutableFlag": false,
-          "parameters": [],
-          "synchronous": false,
-          "lastModifyDate": 1710161443,
-          "collection": "/api/3/workflow_collections/f0fb0b45-3fc5-47eb-a5bc-f0f9e3d0c240",
-          "versions": [],
-          "triggerStep": "/api/3/workflow_steps/171d88fb-dcf2-44c2-aae7-83ce9e52c1a9",
-          "steps": [
-            {
+              "uuid": "f021fd10-2423-46f7-b7ea-1668e3e8100c",
               "@type": "WorkflowStep",
               "name": "Filter Tickets By Query",
               "description": null,
+              "status": null,
               "arguments": {
                 "name": "Fresh Service Desk MSP",
                 "config": "''",
@@ -342,171 +417,24 @@
                   "output_data": "{{vars.result}}"
                 }
               },
-              "status": null,
-              "top": "120",
               "left": "188",
-              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671",
-              "group": null,
-              "uuid": "8cc31e41-7221-45d3-a770-e52159bca280"
-            },
-            {
-              "@type": "WorkflowStep",
-              "name": "Start",
-              "description": null,
-              "arguments": {
-                "route": "b85f9bfb-cf3b-436f-9f52-363bc334b113",
-                "title": "Fresh Service Desk MSP: Filter Tickets By Query",
-                "resources": [
-                  "alerts"
-                ],
-                "inputVariables": [],
-                "step_variables": {
-                  "input": {
-                    "records": "{{vars.input.records[0]}}"
-                  }
-                },
-                "executeButtonText": "Execute",
-                "noRecordExecution": true,
-                "singleRecordExecution": false
-              },
-              "status": null,
-              "top": "20",
-              "left": "20",
-              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
-              "group": null,
-              "uuid": "171d88fb-dcf2-44c2-aae7-83ce9e52c1a9"
+              "top": "120",
+              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671"
             }
           ],
           "routes": [
             {
               "@type": "WorkflowRoute",
+              "uuid": "8eef058a-3bf8-4e3a-bbb3-3261a52f3af9",
+              "label": null,
+              "isExecuted": false,
               "name": "Start-> Filter Tickets By Query",
-              "targetStep": "/api/3/workflow_steps/8cc31e41-7221-45d3-a770-e52159bca280",
-              "sourceStep": "/api/3/workflow_steps/171d88fb-dcf2-44c2-aae7-83ce9e52c1a9",
-              "label": null,
-              "isExecuted": false,
-              "group": null,
-              "uuid": "064ccd2a-c6ea-4198-a609-a2aafd56210b"
+              "sourceStep": "/api/3/workflow_steps/ce6e0179-ae62-4a5a-a04e-8ed7456bc605",
+              "targetStep": "/api/3/workflow_steps/f021fd10-2423-46f7-b7ea-1668e3e8100c"
             }
-          ],
-          "groups": [],
-          "priority": null,
-          "uuid": "ca24c234-e6fd-4dee-8820-6c03da77080b",
-          "id": 2735,
-          "owners": [],
-          "isPrivate": false,
-          "deletedAt": null,
-          "importedBy": [],
-          "recordTags": [
-            "fresh-service-desk-msp"
-          ]
-        },
-        {
-          "@type": "Workflow",
-          "triggerLimit": null,
-          "name": "Update Ticket",
-          "aliasName": null,
-          "tag": "#Fresh Service Desk MSP",
-          "description": "Update a ticket in Fresh Service Desk MSP based on the ticket id and other input parameters you have specified.",
-          "isActive": false,
-          "debug": false,
-          "singleRecordExecution": false,
-          "remoteExecutableFlag": false,
-          "parameters": [],
-          "synchronous": false,
-          "lastModifyDate": 1710161470,
-          "collection": "/api/3/workflow_collections/f0fb0b45-3fc5-47eb-a5bc-f0f9e3d0c240",
-          "versions": [],
-          "triggerStep": "/api/3/workflow_steps/695409b0-cc2b-42bf-aa38-7f2228fe92c5",
-          "steps": [
-            {
-              "@type": "WorkflowStep",
-              "name": "Start",
-              "description": null,
-              "arguments": {
-                "route": "c806eeab-bc30-4a5c-8948-9eba57371c78",
-                "title": "Fresh Service Desk MSP: Update Ticket",
-                "resources": [
-                  "alerts"
-                ],
-                "inputVariables": [],
-                "step_variables": {
-                  "input": {
-                    "records": "{{vars.input.records[0]}}"
-                  }
-                },
-                "executeButtonText": "Execute",
-                "noRecordExecution": true,
-                "singleRecordExecution": false
-              },
-              "status": null,
-              "top": "20",
-              "left": "20",
-              "stepType": "/api/3/workflow_step_types/f414d039-bb0d-4e59-9c39-a8f1e880b18a",
-              "group": null,
-              "uuid": "695409b0-cc2b-42bf-aa38-7f2228fe92c5"
-            },
-            {
-              "@type": "WorkflowStep",
-              "name": "Update Ticket",
-              "description": null,
-              "arguments": {
-                "name": "Fresh Service Desk MSP",
-                "config": "''",
-                "params": {
-                  "path": "Attachment ID",
-                  "email": "",
-                  "status": "Open",
-                  "subject": "",
-                  "ticket_id": "",
-                  "priorities": "Low",
-                  "description": ""
-                },
-                "version": "1.0.0",
-                "connector": "fresh-service-desk-msp",
-                "operation": "update_ticket",
-                "operationTitle": "Update Ticket",
-                "step_variables": {
-                  "output_data": "{{vars.result}}"
-                }
-              },
-              "status": null,
-              "top": "120",
-              "left": "188",
-              "stepType": "/api/3/workflow_step_types/0bfed618-0316-11e7-93ae-92361f002671",
-              "group": null,
-              "uuid": "25394257-866d-42c8-ad8f-22844c8fbf9b"
-            }
-          ],
-          "routes": [
-            {
-              "@type": "WorkflowRoute",
-              "name": "Start-> Update Ticket",
-              "targetStep": "/api/3/workflow_steps/25394257-866d-42c8-ad8f-22844c8fbf9b",
-              "sourceStep": "/api/3/workflow_steps/695409b0-cc2b-42bf-aa38-7f2228fe92c5",
-              "label": null,
-              "isExecuted": false,
-              "group": null,
-              "uuid": "31686274-7f90-4917-9b27-01ad59cf5d8a"
-            }
-          ],
-          "groups": [],
-          "priority": null,
-          "uuid": "d5676d39-4db3-4948-af5d-fd9dbe30498f",
-          "id": 2734,
-          "owners": [],
-          "isPrivate": false,
-          "deletedAt": null,
-          "importedBy": [],
-          "recordTags": [
-            "fresh-service-desk-msp"
           ]
         }
       ]
     }
-  ],
-  "exported_tags": [
-    "Fresh",
-    "fresh-service-desk-msp"
   ]
 }

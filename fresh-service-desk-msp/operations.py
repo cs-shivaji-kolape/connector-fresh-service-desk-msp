@@ -4,35 +4,83 @@ MIT License
 Copyright (c) 2024 Fortinet Inc
 Copyright end
 """
-
 import json
 from os.path import join
 import requests
 from connectors.core.connector import get_logger, ConnectorError
 from connectors.cyops_utilities.builtins import download_file_from_cyops
 from integrations.crudhub import make_request
+import base64
+import urllib.parse
 from .constants import STATUS_MAP, PRIORITY_MAP, ERROR_MSGS
-
 logger = get_logger('fresh-service-desk-msp')
 
+class FreshService(object):
+    def __init__(self, config):
+        self.server_url = config.get('server_url')
+        if self.server_url is None:
+            raise ValueError("The 'server_url' must be provided in the config.")
+        self.server_url = self.server_url.strip()
 
-def get_config(config):
-    try:
-        if config is not None:
-            server_url = config.get('server', '').strip('/')
-            username = config.get('username')
-            password = config.get('password')
-            verify_ssl = config.get('verify_ssl')
-            return server_url, username, password, verify_ssl
-    except Exception as Err:
-        logger.warn('Error occurred while extracting conf :[{0}] '.format(Err))
-        raise ConnectorError(Err)
+        self.api_key = config.get('api_key')
+        if self.api_key is None:
+            raise ValueError("The 'api_key' must be provided in the config.")
+
+        self.verify_ssl = config.get('verify_ssl')
+        encoded_api_key = base64.b64encode(f'{self.api_key}:X'.encode('utf-8')).decode('utf-8')
+
+        self.headers = {
+            'accept': 'application/json',
+            'Authorization': f'Basic {encoded_api_key}',
+            'Content-Type': 'application/json'
+        }
+
+        if not self.server_url.startswith('https://'):
+            self.server_url = f'https://{self.server_url}'
+
+    def make_api_call(self, method='GET', endpoint=None, files=None, data=None):
+        if endpoint:
+            url = f'{self.server_url}{endpoint}'
+        else:
+            url = f'{self.server_url}'
+
+        headers = self.headers
+
+        logger.debug(f'API Request URL: {url}')
+        try:
+            response = requests.request(
+                method=method,
+                url=url,
+                headers=headers,
+                files=files,
+                data=data,
+                verify=self.verify_ssl
+            )
+            logger.debug(f'API Status Code: {response.status_code}')
+
+            if response.status_code in [200, 201, 204]:
+                return response
+
+            error_msg = ERROR_MSGS.get(response.status_code, 'Unknown Error')
+            logger.error(f'Failed to request API {url} response is: {response.content} with reason: {response.reason}')
+            raise ConnectorError(f'{error_msg}: {response.text}')
+
+        except requests.exceptions.SSLError as e:
+            logger.error(f'SSL Error: {e}')
+            raise ConnectorError('SSL certificate validation failed')
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f'Connection Error: {e}')
+            raise ConnectorError('The request timed out while trying to connect to the remote server')
+        except Exception as e:
+            logger.error(f'General Error: {e}')
+            raise ConnectorError(f'An unexpected error occurred: {e}')
 
 
 def check_health(config):
     try:
+        obj = FreshService(config)
         endpoint = '/api/v2/tickets'
-        response = make_api_call(config, method='GET', endpoint=endpoint)
+        response = obj.make_api_call(method='GET', endpoint=endpoint)
         logger.info('Returning Project lists response : [{0}]'.format(response))
         if response.status_code in [200, 201]:
             return response.json()
@@ -43,27 +91,20 @@ def check_health(config):
         raise ConnectorError(err)
 
 
-def get_file_data(iri_type, iri, **kwargs):
+def _get_file_data(iri_type, iri):
     try:
         file_name = None
-        file_iri = None
         if iri_type == 'Attachment ID':
             if not iri.startswith('/api/3/attachments/'):
                 iri = '/api/3/attachments/{0}'.format(iri)
             attachment_data = make_request(iri, 'GET')
             file_iri = attachment_data['file']['@id']
             file_name = attachment_data['file']['filename']
-        if iri_type == 'File IRI':
-            if not iri.startswith('/api/3/files/'):
-                iri = '/api/3/files/{0}'.format(iri)
-                file_iri = iri
-            else:
-                file_iri = iri
-        if not file_iri:
-            raise ConnectorError('Attachment IRI or File IRI must not be empty')
+        else:
+            file_iri = iri
         file_download_response = download_file_from_cyops(file_iri)
         if not file_name:
-            file_name = file_download_response['filename']
+                file_name = file_download_response['filename']
         file_path = join('/tmp', file_download_response['cyops_file_path'])
         logger.info('file id = %s, file_name = %s' % (file_iri, file_name))
         return file_name, file_path
@@ -72,45 +113,9 @@ def get_file_data(iri_type, iri, **kwargs):
         raise ConnectorError('could not find attachment with id {}'.format(str(iri)))
 
 
-def make_api_call(config, method='GET', endpoint=None, files=None, data=None):
-    server_url, username, password, verify_ssl = get_config(config)
-    if not server_url.startswith('https://') and not server_url.startswith('http://'):
-        server_url = 'https://' + server_url
-    if files:
-        headers = None
-    else:
-        headers = {'content-type': 'application/json', 'accept': 'application/json'}
-    if endpoint:
-        server_url = '{0}{1}'.format(server_url, endpoint)
-    logger.debug('API Request URL {}'.format(server_url))
-    try:
-        response = requests.request(url=server_url, method=method, auth=(username, password), headers=headers,
-                                    files=files,
-                                    data=data, verify=verify_ssl)
-        logger.debug('API Status Code: {}'.format(response.status_code))
-        if response.status_code in [200, 201, 204]:
-            return response
-        if ERROR_MSGS.get(response.status_code):
-            logger.error('Failed to request API {0} response is : {1} with reason: {2}'.format(str(server_url), str(response.content),
-                                                                                  str(response.reason)))
-            raise ConnectorError('{0}: {1}'.format(ERROR_MSGS.get(response.status_code), response.text))
-
-        else:
-            logger.error('error: {}'.format(response.reason))
-            raise ConnectorError('API Response: {0} with error {1}: '.format(response.text, response.reason))
-    except requests.exceptions.SSLError as e:
-        logger.error('{}'.format(e))
-        raise ConnectorError('{}'.format('SSL certificate validation failed'))
-    except requests.exceptions.ConnectionError as e:
-        logger.error('{}'.format(e))
-        raise ConnectorError('{}'.format('The request timed out while trying to connect to the remote server'))
-    except Exception as e:
-        logger.error('{}'.format(e))
-        raise ConnectorError('{}'.format(e))
-
-
 def create_ticket(config, params, **kwargs):
     try:
+        obj = FreshService(config)
         payload = {}
         subject = params.pop('subject', None)
         description = params.pop('description', None)
@@ -136,45 +141,14 @@ def create_ticket(config, params, **kwargs):
         if cc_emails:
             payload['cc_emails'] = cc_emails.split(',')
 
-        return make_api_call(config, method='POST', endpoint='/api/v2/tickets', data=json.dumps(payload)).json()
-    except Exception as e:
-        logger.exception('{}'.format(e))
-        raise ConnectorError('{}'.format(e))
-
-
-def get_ticket_by_id(config, params, **kwargs):
-    try:
-        response = make_api_call(config, method='GET', endpoint='/api/v2/tickets/{0}'.format(params.get('ticket_id')))
-        response_json = response.json()
-        return response_json
-    except Exception as e:
-        logger.exception('{}'.format(e))
-        raise ConnectorError('{}'.format(e))
-
-
-def delete_ticket_by_id(config, params, **kwargs):
-    try:
-        response = make_api_call(config, method='DELETE',
-                                 endpoint='/api/v2/tickets/{0}'.format(params.get('ticket_id')))
-        response_json = response.json()
-        return response_json
-    except Exception as e:
-        logger.exception('{}'.format(e))
-        raise ConnectorError('{}'.format(e))
-
-
-def filter_tickets_by_query(config, params, **kwargs):
-    try:
-        response = make_api_call(config, method='GET',
-                                 endpoint='/api/v2/search/tickets?query="{0}"'.format(params.get('query')))
-        response_json = response.json()
-        return response_json
+        return obj.make_api_call(method='POST', endpoint='/api/v2/tickets', data=json.dumps(payload)).json()
     except Exception as e:
         logger.exception('{}'.format(e))
         raise ConnectorError('{}'.format(e))
 
 
 def update_ticket(config, params, **kwargs):
+    obj = FreshService(config)
     payload = {}
     ticket_id = params.get('ticket_id')
     subject = params.pop('subject', None)
@@ -202,7 +176,7 @@ def update_ticket(config, params, **kwargs):
             payload['priority'] = PRIORITY_MAP.get(priorities)
 
         if iri_type and iri:
-            file_name, file_path = get_file_data(iri_type, iri)
+            file_name, file_path = _get_file_data(iri_type, iri)
             if file_path:
                 files = {'attachments[]': (file_name, open(file_path, 'rb'), 'application/octet-stream')}
                 data = payload
@@ -210,11 +184,11 @@ def update_ticket(config, params, **kwargs):
                 files = None
                 data = json.dumps(payload)
         else:
+
             files = None
             data = json.dumps(payload)
-
         endpoint = '/api/v2/tickets/{0}'.format(ticket_id)
-        response = make_api_call(config, method='PUT', endpoint=endpoint, data=data, files=files)
+        response = obj.make_api_call(method='PUT', endpoint=endpoint, data=data, files=files)
         response_json = response.json()
         return response_json
 
@@ -224,10 +198,50 @@ def update_ticket(config, params, **kwargs):
         raise ConnectorError('Error in submitFile(): %s' % e)
 
 
+def get_ticket_by_id(config, params):
+    try:
+        obj = FreshService(config)
+        response = obj.make_api_call(method='GET', endpoint='/api/v2/tickets/{0}'.format(params.get('ticket_id')))
+        response_json = response.json()
+        return response_json
+    except Exception as e:
+        logger.exception('{}'.format(e))
+        raise ConnectorError('{}'.format(e))
+
+
+def delete_ticket_by_id(config, params):
+    try:
+        obj = FreshService(config)
+        ticket_id =params.get('ticket_id')
+        response = obj.make_api_call(method='DELETE',
+                                 endpoint='/api/v2/tickets/{0}'.format(ticket_id))
+
+        return {'Tcket ID' :ticket_id , 'Status': 'Success'}
+    except Exception as e:
+        logger.exception('{}'.format(e))
+        raise ConnectorError('{}'.format(e))
+
+
+def filter_tickets_by_query(config, params):
+    try:
+        obj = FreshService(config)
+        query = params.get('query', '')
+        encoded_query = urllib.parse.quote(query)
+        endpoint = f'/api/v2/tickets/filter?query="{encoded_query}"'
+        response = obj.make_api_call(method='GET',
+                                 endpoint='/api/v2/tickets/filter?query="{0}"'.format(query))
+        response_json = response.json()
+        return response_json
+    except Exception as e:
+        logger.exception('{}'.format(e))
+        raise ConnectorError('{}'.format(e))
+
 operations = {
-    'create_ticket': create_ticket,
-    'get_ticket_by_id': get_ticket_by_id,
-    'update_ticket': update_ticket,
-    'delete_ticket_by_id': delete_ticket_by_id,
-    'filter_tickets_by_query': filter_tickets_by_query
+  'create_ticket': create_ticket,
+  'update_ticket': update_ticket,
+  'get_ticket_by_id': get_ticket_by_id,
+  'delete_ticket_by_id': delete_ticket_by_id,
+  'filter_tickets_by_query': filter_tickets_by_query
 }
+
+
