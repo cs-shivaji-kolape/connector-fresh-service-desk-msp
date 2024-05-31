@@ -26,8 +26,7 @@ For the procedure to configure a connector, click [here](https://docs.fortinet.c
 ### Configuration parameters
 <p>In FortiSOAR&trade;, on the Connectors page, click the <strong>Fresh Service Desk MSP</strong> connector row (if you are in the <strong>Grid</strong> view on the Connectors page) and in the <strong>Configurations&nbsp;</strong> tab enter the required configuration details:&nbsp;</p>
 <table border=1><thead><tr><th>Parameter<br></th><th>Description<br></th></tr></thead><tbody><tr><td>Server URL<br></td><td>Specify the URL of the Fresh Service Desk MSP server to which you will connect and perform the automated operations.<br>
-<tr><td>Username<br></td><td>Specify the API key that is configured for your account to access the Fresh Service Desk MSP endpoint.<br>
-<tr><td>Password<br></td><td>Specify the password that is configured for your account to access the Fresh Service Desk MSP endpoint.<br>
+<tr><td>Api Key<br></td><td>Specify the api key  that is configured for your account to access the Fresh Service Desk MSP endpoint.<br>
 <tr><td>Verify SSL<br></td><td>Specifies whether the SSL certificate for the server is to be verified or not. <br/>By default, this option is set as True.<br></td></tr>
 </tbody></table>
 
@@ -43,11 +42,11 @@ The following automated operations can be included in playbooks and you can also
 ### operation: Create Ticket
 #### Input parameters
 <table border=1><thead><tr><th>Parameter<br></th><th>Description<br></th></tr></thead><tbody><tr><td>Subject<br></td><td>Specify the subject of the ticket request that you want to create in Fresh Service Desk MSP.<br>
-</td></tr><tr><td>Description<br></td><td>(Optional) Specify the description of the ticket request to create in Fresh Service Desk MSP.<br>
 </td></tr><tr><td>Email<br></td><td>Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.<br>
 </td></tr><tr><td>CC Email<br></td><td>Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.<br>
 </td></tr><tr><td>Status<br></td><td>Select the status of the ticket request to create in Fresh Service Desk MSP.<br>
 </td></tr><tr><td>Priorities<br></td><td>Select the priority of the ticket request to create in Fresh Service Desk MSP.<br>
+</td></tr><tr><td>Description<br></td><td>Specify the description of the ticket request to create in Fresh Service Desk MSP.<br>
 </td></tr></tbody></table>
 
 #### Output
@@ -197,7 +196,7 @@ The output contains the following populated JSON schema:
 </td></tr><tr><td>Email<br></td><td>Specify email address  of the requester. If no contact exists with this email address in Fresh Service Desk MSP, it will be added as a new contact.<br>
 </td></tr><tr><td>Status<br></td><td>Select the status of the ticket request for which you want to create tickets from Fresh Service Desk MSP.<br>
 </td></tr><tr><td>Priorities<br></td><td>Select the priority of the ticket request for which you want to retrieve tickets from from Fresh Service Desk MSP.<br>
-</td></tr><tr><td>File IRI or Attachment IRI<br></td><td>Specify the file to add as an attachment to the specified Jira ticket. You can select from the following options: Attachment ID: Specify the attachment ID of the file in the FortiSOAR Attachments module. File IRI: Specify the File IRI of the file in the FortiSOAR Attachments module.<br>
+</td></tr><tr><td>File IRI or Attachment IRI<br></td><td>Specify the file to add as an attachment to the specified a ticket. You can select from the following options: Attachment ID: Specify the attachment ID of the file in the FortiSOAR Attachments module. File IRI: Specify the File IRI of the file in the FortiSOAR Attachments module.<br>
 <strong>If you choose 'Attachment ID'</strong><ul><li>Attachment ID: Specify the attachment ID of the file in the FortiSOAR Attachments module.</li></ul><strong>If you choose 'File IRI'</strong><ul><li>File IRI: Specify the File IRI of the file in the FortiSOAR Attachments module.</li></ul></td></tr></tbody></table>
 
 #### Output

@@ -1,6 +1,8 @@
 #### Descriptions:
-_Add PR descriptions here_
+Addressing Issue :
+Getting error while configuring the connector Username/password basic authentication is no longer supported. Please use API key basic authentication.
 
 #### Fix:
-_Add fix/changes here_
+1. API key basic authentication
+
 
